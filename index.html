@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Smooth Corner - Round the corners of your images easily online. Free, fast, and modern image editing tool.">
+    <meta name="keywords" content="image editor, round corners, smooth corner, photo editing, online tool">
+    <meta name="author" content="Smooth Corner">
+    <meta name="robots" content="index, follow">
+    <title>Smooth Corner - Round Image Corners Online</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            background: linear-gradient(45deg, #ff6f91, #8a4af3, #1e90ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: glow 2s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+            0% { text-shadow: 0 0 5px rgba(255, 111, 145, 0.5); }
+            50% { text-shadow: 0 0 20px rgba(138, 74, 243, 0.7); }
+            100% { text-shadow: 0 0 5px rgba(30, 144, 255, 0.5); }
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .upload-btn, .download-btn {
+            display: inline-block;
+            padding: 12px 24px;
+            margin: 10px;
+            border: none;
+            border-radius: 25px;
+            background: linear-gradient(45deg, #ff6f91, #8a4af3);
+            color: white;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .upload-btn:hover, .download-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .slider {
+            margin: 15px 0;
+            width: 100%;
+        }
+
+        canvas {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 10px 0;
+            border: 2px solid #ddd;
+        }
+
+        .ad-banner {
+            background: #f0f0f0;
+            padding: 10px;
+            margin: 20px 0;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 0.9em;
+            color: #555;
+        }
+
+        .social-bar {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .social-bar a {
+            color: #fff;
+            background: linear-gradient(45deg, #ff6f91, #8a4af3);
+            padding: 10px;
+            border-radius: 50%;
+            text-decoration: none;
+            transition: transform 0.3s;
+        }
+
+        .social-bar a:hover {
+            transform: scale(1.1);
+        }
+
+        footer {
+            margin-top: 20px;
+            text-align: center;
+            color: #666;
+        }
+
+        @media (max-width: 480px) {
+            header h1 {
+                font-size: 1.8em;
+            }
+
+            .container {
+                padding: 15px;
+            }
+
+            .upload-btn, .download-btn {
+                padding: 10px 20px;
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Smooth Corner</h1>
+    </header>
+
+    <div class="container">
+        <label for="imageUpload" class="upload-btn">Upload Image</label>
+        <input type="file" id="imageUpload" accept="image/*">
+
+        <div class="slider">
+            <label for="radius">Corner Radius: <span id="radiusValue">50</span>px</label>
+            <input type="range" id="radius" min="0" max="200" value="50">
+        </div>
+
+        <canvas id="canvas"></canvas>
+
+        <button class="download-btn" id="downloadBtn" style="display: none;">Download Image</button>
+
+        <div class="ad-banner">
+            [Native Banner Ad Placeholder]
+        </div>
+    </div>
+
+    <div class="social-bar">
+        <a href="#">FB</a>
+        <a href="#">TW</a>
+        <a href="#">IG</a>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Smooth Corner. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const imageUpload = document.getElementById('imageUpload');
+        const radiusSlider = document.getElementById('radius');
+        const radiusValue = document.getElementById('radiusValue');
+        const downloadBtn = document.getElementById('downloadBtn');
+        let image = new Image();
+
+        imageUpload.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    image.src = event.target.result;
+                    image.onload = () => {
+                        canvas.width = image.width;
+                        canvas.height = image.height;
+                        drawImage();
+                        downloadBtn.style.display = 'inline-block';
+                    };
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        radiusSlider.addEventListener('input', () => {
+            radiusValue.textContent = radiusSlider.value;
+            drawImage();
+        });
+
+        function drawImage() {
+            const radius = parseInt(radiusSlider.value);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Create rounded rectangle clipping path
+            ctx.beginPath();
+            ctx.moveTo(radius, 0);
+            ctx.lineTo(canvas.width - radius, 0);
+            ctx.quadraticCurveTo(canvas.width, 0, canvas.width, radius);
+            ctx.lineTo(canvas.width, canvas.height - radius);
+            ctx.quadraticCurveTo(canvas.width, canvas.height, canvas.width - radius, canvas.height);
+            ctx.lineTo(radius, canvas.height);
+            ctx.quadraticCurveTo(0, canvas.height, 0, canvas.height - radius);
+            ctx.lineTo(0, radius);
+            ctx.quadraticCurveTo(0, 0, radius, 0);
+            ctx.closePath();
+            ctx.clip();
+
+            // Draw image
+            ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+        }
+
+        downloadBtn.addEventListener('click', () => {
+            const link = document.createElement('a');
+            link.download = 'smooth_corner_image.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        });
+    </script>
+</body>
+</html>
