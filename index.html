@@ -1,1 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Smooth Corner - Make image corners rounded easily online. Upload and download with perfect corner radius." />
+  <meta name="keywords" content="round corners, smooth corner, image rounder, corner radius, image editor online">
+  <meta name="author" content="Smooth Corner">
+  <title>Smooth Corner</title>
+  <style>
+    /* Modern CSS Reset */
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+    
+    /* Custom Properties */
+    :root {
+      --primary-gradient: linear-gradient(135deg, #6366f1, #8b5cf6, #d946ef);
+      --secondary-gradient: linear-gradient(135deg, #6366f1, #8b5cf6);
+      --accent-color: #d946ef;
+      --text-light: #fff;
+      --text-dark: #1f2937;
+      --bg-light: #f9fafb;
+      --card-bg: rgba(255, 255, 255, 0.9);
+      --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+      --border-radius-sm: 12px;
+      --border-radius-md: 20px;
+      --border-radius-lg: 30px;
+      --spacing-xs: 8px;
+      --spacing-sm: 16px;
+      --spacing-md: 24px;
+      --spacing-lg: 32px;
+      --spacing-xl: 48px;
+      --font-main: 'Poppins', 'Segoe UI', sans-serif;
+    }
+    
+    /* Base Styles */
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      font-family: var(--font-main);
+      background: var(--primary-gradient);
+      color: var(--text-light);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: var(--spacing-md);
+      background-attachment: fixed;
+      position: relative;
+      overflow-x: hidden;
+    }
+    
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.15) 0%, transparent 20%),
+        radial-gradient(circle at 80% 70%, rgba(255, 255, 255, 0.1) 0%, transparent 20%);
+      z-index: -1;
+    }
+    
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: var(--spacing-md);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--spacing-lg);
+    }
+    
+    /* Header Styles */
+    header {
+      text-align: center;
+      margin-bottom: var(--spacing-md);
+      width: 100%;
+    }
+    
+    .logo-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: var(--spacing-sm);
+    }
+    
+    .logo {
+      font-size: 2.5rem;
+      font-weight: 700;
+      background: linear-gradient(90deg, #fff, #f0f0f0);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      margin: 0;
+      padding: var(--spacing-sm) 0;
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+    }
+    
+    .logo::before {
+      content: '';
+      display: inline-block;
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, #6366f1, #d946ef);
+      border-radius: 10px;
+      margin-right: var(--spacing-xs);
+    }
+    
+    .tagline {
+      font-size: 1.1rem;
+      font-weight: 400;
+      opacity: 0.9;
+      margin-top: 0;
+      margin-bottom: var(--spacing-md);
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    
+    /* Main Content Styles */
+    main {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--spacing-lg);
+    }
+    
+    .uploader {
+      background: var(--card-bg);
+      backdrop-filter: blur(10px);
+      border-radius: var(--border-radius-lg);
+      padding: var(--spacing-lg);
+      color: var(--text-dark);
+      box-shadow: var(--shadow-lg);
+      text-align: center;
+      max-width: 500px;
+      width: 100%;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .uploader:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-lg), 0 15px 30px rgba(99, 102, 241, 0.2);
+    }
+    
+    .uploader::before {
+      content: '';
+      position: absolute;
+      top: -10px;
+      right: -10px;
+      width: 100px;
+      height: 100px;
+      background: var(--secondary-gradient);
+      border-radius: 50%;
+      opacity: 0.1;
+      z-index: 0;
+    }
+    
+    .uploader-header {
+      margin-bottom: var(--spacing-md);
+    }
+    
+    .uploader-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: var(--spacing-xs);
+      color: var(--text-dark);
+    }
+    
+    .uploader-subtitle {
+      font-size: 0.9rem;
+      opacity: 0.7;
+      margin-top: 0;
+    }
+    
+    .upload-area {
+      border: 2px dashed rgba(99, 102, 241, 0.3);
+      border-radius: var(--border-radius-md);
+      padding: var(--spacing-md);
+      margin-bottom: var(--spacing-md);
+      position: relative;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    
+    .upload-area:hover {
+      border-color: rgba(99, 102, 241, 0.6);
+      background-color: rgba(99, 102, 241, 0.05);
+    }
+    
+    .upload-icon {
+      font-size: 2rem;
+      margin-bottom: var(--spacing-xs);
+      color: var(--accent-color);
+    }
+    
+    .upload-text {
+      font-size: 0.9rem;
+      margin: 0;
+      color: rgba(31, 41, 55, 0.7);
+    }
+    
+    input[type="file"] {
+      width: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+    
+    .radius-control {
+      margin: var(--spacing-md) 0;
+    }
+    
+    .radius-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--spacing-xs);
+      font-weight: 500;
+    }
+    
+    .radius-value {
+      background: var(--secondary-gradient);
+      color: white;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+    
+    input[type="range"] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 5px;
+      background: #e2e8f0;
+      outline: none;
+      margin: var(--spacing-sm) 0;
+    }
+    
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--secondary-gradient);
+      cursor: pointer;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      transition: all 0.2s ease;
+    }
+    
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.1);
+    }
+    
+    .action-buttons {
+      display: flex;
+      gap: var(--spacing-sm);
+      margin-top: var(--spacing-md);
+    }
+    
+    button {
+      background: var(--secondary-gradient);
+      border: none;
+      color: var(--text-light);
+      padding: 12px 24px;
+      border-radius: var(--border-radius-md);
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: var(--shadow-sm);
+    }
+    
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+    
+    button:active {
+      transform: translateY(0);
+    }
+    
+    .button-primary {
+      background: var(--secondary-gradient);
+    }
+    
+    .button-primary:hover {
+      background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    }
+    
+    /* Preview Area */
+    .preview-container {
+      width: 100%;
+      max-width: 700px;
+      margin-top: var(--spacing-md);
+      background: var(--card-bg);
+      backdrop-filter: blur(10px);
+      border-radius: var(--border-radius-lg);
+      padding: var(--spacing-md);
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .preview-container::before {
+      content: '';
+      position: absolute;
+      bottom: -20px;
+      left: -20px;
+      width: 150px;
+      height: 150px;
+      background: var(--secondary-gradient);
+      border-radius: 50%;
+      opacity: 0.1;
+      z-index: 0;
+    }
+    
+    .preview-header {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--spacing-md);
+    }
+    
+    .preview-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--text-dark);
+      margin: 0;
+    }
+    
+    canvas {
+      max-width: 100%;
+      border-radius: var(--border-radius-md);
+      box-shadow: var(--shadow-sm);
+      display: block;
+      margin: 0 auto;
+    }
+    
+    .empty-canvas-placeholder {
+      width: 100%;
+      height: 300px;
+      border: 2px dashed rgba(99, 102, 241, 0.3);
+      border-radius: var(--border-radius-md);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: rgba(31, 41, 55, 0.5);
+    }
+    
+    /* Ad Banners */
+    .ad-banner, .social-bar {
+      width: 100%;
+      text-align: center;
+      margin: var(--spacing-md) 0;
+      padding: var(--spacing-sm);
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(5px);
+      border-radius: var(--border-radius-md);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-light);
+      font-size: 0.9rem;
+      min-height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    /* Footer */
+    footer {
+      width: 100%;
+      text-align: center;
+      margin-top: var(--spacing-xl);
+      padding: var(--spacing-md) 0;
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+    
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: var(--spacing-md);
+      margin-top: var(--spacing-sm);
+    }
+    
+    .footer-links a {
+      color: var(--text-light);
+      text-decoration: none;
+      transition: opacity 0.2s ease;
+    }
+    
+    .footer-links a:hover {
+      opacity: 1;
+      text-decoration: underline;
+    }
+    
+    /* Responsive Styles */
+    @media (max-width: 768px) {
+      :root {
+        --spacing-md: 16px;
+        --spacing-lg: 24px;
+        --spacing-xl: 32px;
+      }
+      
+      .logo {
+        font-size: 2rem;
+      }
+      
+      .tagline {
+        font-size: 1rem;
+      }
+      
+      .container {
+        padding: var(--spacing-sm);
+      }
+      
+      .uploader, .preview-container {
+        padding: var(--spacing-md);
+      }
+      
+      .action-buttons {
+        flex-direction: column;
+      }
+    }
+    
+    /* Animations */
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+    
+    .pulse {
+      animation: pulse 2s infinite ease-in-out;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo-container">
+        <h1 class="logo">Smooth Corner</h1>
+      </div>
+      <p class="tagline">Transform your images with perfectly rounded corners in seconds</p>
+    </header>
+    
+    <main>
+      <div class="uploader">
+        <div class="uploader-header">
+          <h2 class="uploader-title">Image Rounder</h2>
+          <p class="uploader-subtitle">Upload an image and adjust the corner radius</p>
+        </div>
+        
+        <div class="upload-area">
+          <div class="upload-icon">📁</div>
+          <p class="upload-text">Click or drag image here</p>
+          <input type="file" id="imageInput" accept="image/*" />
+        </div>
+        
+        <div class="radius-control">
+          <div class="radius-label">
+            <span>Corner Radius</span>
+            <span class="radius-value"><span id="radiusValue">50</span>px</span>
+          </div>
+          <input type="range" id="radius" min="0" max="500" value="50" />
+        </div>
+        
+        <div class="action-buttons">
+          <button class="button-primary" onclick="downloadImage()">
+            <span>Download Image</span>
+          </button>
+        </div>
+      </div>
+      
+      <div class="preview-container">
+        <div class="preview-header">
+          <h3 class="preview-title">Preview</h3>
+        </div>
+        <canvas id="canvas"></canvas>
+        <div id="empty-preview" class="empty-canvas-placeholder">
+          <div class="upload-icon">👁️</div>
+          <p>Image preview will appear here</p>
+        </div>
+      </div>
+      
+      <div class="ad-banner">[Native Banner Ad]</div>
+    </main>
+    
+    <div class="social-bar">[Social Bar Ad]</div>
+    
+    <footer>
+      <p>© 2025 Smooth Corner. All rights reserved.</p>
+      <div class="footer-links">
+        <a href="#">About</a>
+        <a href="#">Privacy</a>
+        <a href="#">Terms</a>
+        <a href="#">Contact</a>
+      </div>
+    </footer>
+  </div>
 
+  <script>
+    const imageInput = document.getElementById('imageInput');
+    const radiusInput = document.getElementById('radius');
+    const radiusValue = document.getElementById('radiusValue');
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const emptyPreview = document.getElementById('empty-preview');
+    let img = new Image();
+
+    imageInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        img.onload = () => {
+          drawImage();
+          emptyPreview.style.display = 'none';
+          canvas.style.display = 'block';
+        };
+        img.src = event.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    radiusInput.addEventListener('input', () => {
+      radiusValue.textContent = radiusInput.value;
+      if (img.src) {
+        drawImage();
+      }
+    });
+
+    function drawImage() {
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const radius = Math.min(parseInt(radiusInput.value), img.width / 2, img.height / 2);
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.save();
+      ctx.beginPath();
+      roundedRect(ctx, 0, 0, canvas.width, canvas.height, radius);
+      ctx.clip();
+      ctx.drawImage(img, 0, 0);
+      ctx.restore();
+    }
+
+    function roundedRect(ctx, x, y, width, height, radius) {
+      ctx.moveTo(x + radius, y);
+      ctx.arcTo(x + width, y, x + width, y + height, radius);
+      ctx.arcTo(x + width, y + height, x, y + height, radius);
+      ctx.arcTo(x, y + height, x, y, radius);
+      ctx.arcTo(x, y, x + width, y, radius);
+      ctx.closePath();
+    }
+
+    function downloadImage() {
+      if (!img.src) {
+        alert('Please upload an image first!');
+        return;
+      }
+      const link = document.createElement('a');
+      link.download = 'rounded-image.png';
+      link.href = canvas.toDataURL();
+      link.click();
+    }
+
+    // Initialize
+    window.onload = function() {
+      canvas.style.display = 'none';
+    };
+  </script>
+</body>
+</html>
